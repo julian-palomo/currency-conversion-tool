@@ -1,33 +1,35 @@
-import type { ConversionsList } from '../App'
+import { useId } from 'react'
+import { formatCurrency } from '../utils/formatCurrency'
 
-type ConversionListProps = {
-  conversionsList: ConversionsList[]
+export type Conversion = {
+  id: string
+  amount: number
+  fromCurrency: string
+  toCurrency: string
+  conversionValue: number
 }
 
-export function ConversionList({ conversionsList }: ConversionListProps) {
+type ConversionListProps = {
+  conversions: Conversion[]
+}
+
+export function ConversionList({ conversions }: ConversionListProps) {
+  const headingId = useId()
+
   return (
-    <div>
-      <ul>
-        {conversionsList.map(
-          ({ id, amount, toCurrency, fromCurrency, conversionValue }) => {
-            const amountNormalised = new Intl.NumberFormat(undefined, {
-              style: 'currency',
-              currency: fromCurrency,
-            }).format(amount)
+    <section aria-labelledby={headingId}>
+      <h2 id={headingId}>Recent conversions</h2>
 
-            const conversionValueNormalised = new Intl.NumberFormat(undefined, {
-              style: 'currency',
-              currency: toCurrency,
-            }).format(conversionValue)
-
-            return (
-              <li key={id}>
-                {amountNormalised} - {conversionValueNormalised}
-              </li>
-            )
-          },
+      <ol>
+        {conversions.map(
+          ({ id, amount, fromCurrency, toCurrency, conversionValue }) => (
+            <li key={id}>
+              {formatCurrency(amount, fromCurrency, 'code')} →{' '}
+              {formatCurrency(conversionValue, toCurrency, 'code')}
+            </li>
+          ),
         )}
-      </ul>
-    </div>
+      </ol>
+    </section>
   )
 }

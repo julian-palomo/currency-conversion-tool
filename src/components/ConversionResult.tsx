@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import type { ConversionParams } from '../api/convert'
 import { useConversion } from '../hooks/useConversion'
+import { formatCurrency } from '../utils/formatCurrency'
 
 export function ConversionResult({ from, to, amount }: ConversionParams) {
   const id = useId()
@@ -19,10 +20,7 @@ export function ConversionResult({ from, to, amount }: ConversionParams) {
     if (isLoading) return 'Converting…'
     if (isError) return error.message
     if (value === undefined) return '—'
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: to,
-    }).format(value)
+    return formatCurrency(value, to)
   }
 
   return (

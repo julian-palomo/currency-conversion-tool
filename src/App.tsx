@@ -5,51 +5,40 @@ import viteLogo from './assets/vite.svg'
 import './App.css'
 
 import { AmountInput } from './components/AmountInput'
-import { ConversionList } from './components/ConversionList'
+import { type Conversion, ConversionList } from './components/ConversionList'
 import { ConversionResult } from './components/ConversionResult'
 import { CurrencySelect } from './components/CurrencySelect'
 import { useConversion } from './hooks/useConversion'
 
-export type ConversionsList = {
-  id: string
-  amount: number
-  toCurrency: string
-  fromCurrency: string
-  conversionValue: number
-}
+// How many recent conversions to show
+const RECENT_CONVERSIONS_LIMIT = 5
 
 function App() {
   const [amount, setAmount] = useState('')
   const [fromCurrency, setFromCurrency] = useState('')
   const [toCurrency, setToCurrency] = useState('')
-  const [conversionsList, setConversionsList] = useState<ConversionsList[]>([])
+  const [recentConversions, setRecentConversions] = useState<Conversion[]>([])
   const { data: conversionValue } = useConversion({
     from: fromCurrency,
     to: toCurrency,
     amount: Number(amount),
   })
 
-  const id = crypto.randomUUID()
-  const CONVERSION_LIST_LIMIT = 5
+  // Only defined once both currencies and a valid amount give a result
+  const canAddConversion = conversionValue !== undefined
 
   const handleAddConversion = () => {
-    setConversionsList((prev) => {
-      const newArray = [
-        {
-          id,
-          amount: Number(amount),
-          fromCurrency,
-          toCurrency,
-          conversionValue: Number(conversionValue),
-        },
-        ...prev,
-      ]
-      if (CONVERSION_LIST_LIMIT - 1 < conversionsList.length) {
-        newArray.pop()
-      }
+    if (conversionValue === undefined) return
 
-      return newArray
-    })
+    const conversion: Conversion = {
+      id: crypto.randomUUID(),
+      amount: Number(amount),
+      fromCurrency,
+      toCurrency,
+      conversionValue,
+    }
+    // Keep every conversion, newest first
+    setRecentConversions((prev) => [conversion, ...prev])
   }
 
   return (
@@ -87,11 +76,18 @@ function App() {
           />
         </div>
         <div className="converter-row">
-          <button type="button" onClick={handleAddConversion}>
-            Add
+          <button
+            type="button"
+            onClick={handleAddConversion}
+            disabled={!canAddConversion}
+          >
+            Add to recent conversions
           </button>
-
-          <ConversionList conversionsList={conversionsList} />
+          {recentConversions.length > 0 && (
+            <ConversionList
+              conversions={recentConversions.slice(0, RECENT_CONVERSIONS_LIMIT)}
+            />
+          )}
         </div>
       </section>
     </>
