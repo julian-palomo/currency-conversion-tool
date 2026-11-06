@@ -37,8 +37,10 @@ function App() {
       toCurrency,
       conversionValue,
     }
-    // Keep every conversion, newest first
-    setRecentConversions((prev) => [conversion, ...prev].slice(0, RECENT_CONVERSIONS_LIMIT))
+    // Newest first, keep only the last 5
+    setRecentConversions((prev) =>
+      [conversion, ...prev].slice(0, RECENT_CONVERSIONS_LIMIT),
+    )
   }
 
   return (
@@ -84,9 +86,7 @@ function App() {
             Add to recent conversions
           </button>
           {recentConversions.length > 0 && (
-            <ConversionList
-              conversions={recentConversions.slice(0, RECENT_CONVERSIONS_LIMIT)}
-            />
+            <ConversionList conversions={recentConversions} />
           )}
         </div>
       </section>
