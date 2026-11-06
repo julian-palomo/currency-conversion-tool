@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.4",
+    "crypto-randomuuid": "^1.0.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
