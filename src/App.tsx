@@ -38,7 +38,7 @@ function App() {
       conversionValue,
     }
     // Keep every conversion, newest first
-    setRecentConversions((prev) => [conversion, ...prev])
+    setRecentConversions((prev) => [conversion, ...prev].slice(0, RECENT_CONVERSIONS_LIMIT))
   }
 
   return (
